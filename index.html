@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="view-)port" content="width=device-width, initial-scale=1.0">
+    <title>Fred, o Peludinho - Ebook</title>
+    
+    <!-- Fontes do Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Cedarville+Cursive&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Georgia', serif;
+            background: #2c2418;
+            color: #f5e6d3;
+            line-height: 1.7;
+            font-size: 18px;
+        }
+
+        h1, h2, h3, nav a {
+            font-family: 'Pacifico', cursive;
+        }
+
+        .texto {
+            font-family: 'Cedarville Cursive', cursive;
+            font-size: 1.6em;
+            font-weight: 400;
+            color: #f0e2d0;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        header {
+            background: linear-gradient(135deg, #3e2a24, #2a1e18);
+            color: #f5e6d3;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        /* CARROSSEL - com altura limitada e rolagem suave */
+        .carrossel-container {
+            max-width: 800px;
+            max-height: 450px;
+            margin: 0 auto;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: #1a140f;
+        }
+
+        .carrossel-slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carrossel-slide {
+            min-width: 100%;
+        }
+
+        .carrossel-slide img {
+            width: 100%;
+            height: auto;
+            max-height: 450px;
+            object-fit: contain;
+            display: block;
+            background: #1a140f;
+        }
+
+        .carrossel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 50%;
+            transition: background 0.3s;
+            z-index: 10;
+        }
+
+        .carrossel-btn:hover {
+            background: rgba(0,0,0,0.8);
+        }
+
+        .btn-anterior {
+            left: 10px;
+        }
+
+        .btn-proximo {
+            right: 10px;
+        }
+
+        .carrossel-indicadores {
+            text-align: center;
+            padding: 8px;
+            background: rgba(0,0,0,0.5);
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .indicador {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #bbb;
+            margin: 0 4px;
+            cursor: pointer;
+        }
+
+        .indicador.ativo {
+            background: #d4a373;
+        }
+
+        .capa {
+            max-width: 180px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 3px solid #d4a373;
+        }
+
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(30,20,15,0.9);
+            backdrop-filter: blur(5px);
+            padding: 8px 15px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            border: 1px solid #d4a373;
+        }
+
+        .music-player button {
+            background: #d4a373;
+            border: none;
+            color: #2c2418;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 30px;
+        }
+
+        .music-player button:hover {
+            background: #b5835a;
+            color: white;
+        }
+
+        .music-player audio {
+            height: 30px;
+        }
+
+        nav {
+            background: #3e2a24;
+            padding: 12px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav a {
+            color: #f5e6d3;
+            text-decoration: none;
+            margin: 0 8px;
+            padding: 6px 14px;
+            border-radius: 30px;
+            transition: all 0.3s;
+            display: inline-block;
+            font-size: 0.9em;
+        }
+
+        nav a:hover {
+            background: #d4a373;
+            color: #2c2418;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .capitulo {
+            background: #3e2e26;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .capitulo:hover {
+            transform: translateY(-5px);
+        }
+
+        .capitulo h2 {
+            color: #e4c2a1;
+            border-left: 5px solid #d4a373;
+            padding-left: 15px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .capitulo h3 {
+            color: #e4c2a1;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .capitulo .texto {
+            background: #4a3728;
+            padding: 18px 24px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #d4a373;
+        }
+
+        .galeria {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .galeria-item {
+            background: #5a4536;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .galeria-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .galeria-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .galeria-item:hover img {
+            transform: scale(1.02);
+        }
+
+        footer {
+            background: #2a1e18;
+            text-align: center;
+            padding: 30px;
+            color: #e4c2a1;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            body { font-size: 15px; }
+            header h1 { font-size: 2em; }
+            header p { font-size: 1em; }
+            nav a { margin: 4px; font-size: 0.75em; padding: 5px 10px; }
+            .capitulo { padding: 18px; }
+            .galeria { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            .capitulo .texto { font-size: 1.2em; padding: 12px; }
+            .carrossel-container { max-height: 300px; }
+            .carrossel-slide img { max-height: 300px; }
+            .capa { max-width: 140px; }
+            .music-player { bottom: 10px; right: 10px; padding: 5px 10px; }
+            .music-player audio { width: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🐕 Fred, o Peludinho</h1>
+    <p>As aventuras e mimos de um cãozinho muito especial</p>
+    
+    <!-- CARROSSEL -->
+    <div class="carrossel-container">
+        <div class="carrossel-slides" id="carrosselSlides">
+            <div class="carrossel-slide"><img src="imagens/carrossel/foto1.jpg" alt="Fred 1"></div>
+            <div class="carrossel-slide"><img src="imagens/carrossel/foto2.jpg" alt="Fred 2"></div>
+            <div class="carrossel-slide"><img src="imagens/carrossel/foto3.jpg" alt="Fred 3"></div>
+            <div class="carrossel-slide"><img src="imagens/carrossel/foto4.jpg" alt="Fred 4"></div>
+            <div class="carrossel-slide"><img src="imagens/carrossel/foto5.jpg" alt="Fred 5"></div>
+            <div class="carrossel-slide"><img src="imagens/carrossel/foto6.jpg" alt="Fred 6"></div>
+        </div>
+        <button class="carrossel-btn btn-anterior" id="btnAnterior">❮</button>
+        <button class="carrossel-btn btn-proximo" id="btnProximo">❯</button>
+        <div class="carrossel-indicadores" id="indicadores"></div>
+    </div>
+    
+    <div>
+        <!-- vazio, mas a tag continua -->
+    </div>
+</header>
+
+<nav>
+    <a href="#cap1">Cap 1</a>
+    <a href="#cap2">Cap 2</a>
+    <a href="#cap3">Cap 3</a>
+    <a href="#cap4">Cap 4</a>
+    <a href="#cap5">Cap 5</a>
+    <a href="#cap6">Cap 6</a>
+    <a href="#cap7">Cap 7</a>
+    <a href="#cap8">Cap 8</a>
+</nav>
+
+<div class="container">
+    <!-- Capítulo 1 -->
+    <div class="capitulo" id="cap1">
+        <h2>📖 Capítulo 1</h2>
+        <div class="texto">"Quando cheguei na casa da minha vovó com a mamãe"</div>
+        <div class="galeria">
+            <div class="galeria-item"><img src="imagens/capitulo-1/imagem1.jpg" alt="img1"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-1/imagem2.jpg" alt="img2"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-1/imagem3.jpg" alt="img3"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-1/imagem4.jpg" alt="img4"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-1/imagem5.jpg" alt="img5"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-1/imagem6.jpg" alt="img6"></div>
+        </div>
+        <h3>🐾 Parte 2: Eu quando criança na casa da vovó</h3>
+        <div class="texto">"Eu quando criança na casa da vovó"</div>
+        <div class="galeria">
+            <div class="galeria-item"><img src="imagens/capitulo-1/parte-2/imagem1.jpg" alt="img1"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-1/parte-2/imagem2.jpg" alt="img2"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-1/parte-2/imagem3.jpg" alt="img3"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-1/parte-2/imagem4.jpg" alt="img4"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-1/parte-2/imagem5.jpg" alt="img5"></div>
+        </div>
+    </div>
+
+    <!-- Capítulo 2 -->
+    <div class="capitulo" id="cap2">
+        <h2>🛁 Capítulo 2</h2>
+        <div class="texto">"Quando tomo meu banho"</div>
+        <div class="galeria">
+            <div class="galeria-item"><img src="imagens/capitulo-2/imagem1.jpg" alt="img1"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-2/imagem2.jpg" alt="img2"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-2/imagem3.jpg" alt="img3"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-2/imagem4.jpg" alt="img4"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-2/imagem5.jpg" alt="img5"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-2/imagem6.jpg" alt="img6"></div>
+        </div>
+    </div>
+
+    <!-- Capítulo 3 -->
+    <div class="capitulo" id="cap3">
+        <h2>🤔 Capítulo 3</h2>
+        <div class="texto">"Eu pensando em nada para fazer"</div>
+        <div class="galeria">
+            <div class="galeria-item"><img src="imagens/capitulo-3/imagem1.jpg" alt="img1"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-3/imagem2.jpg" alt="img2"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-3/imagem3.jpg" alt="img3"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-3/imagem4.jpg" alt="img4"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-3/imagem5.jpg" alt="img5"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-3/imagem6.jpg" alt="img6"></div>
+        </div>
+    </div>
+
+    <!-- Capítulo 4 -->
+    <div class="capitulo" id="cap4">
+        <h2>🥰 Capítulo 4</h2>
+        <div class="texto">"Eu sendo fofinho para vovó"</div>
+        <div class="galeria">
+            <div class="galeria-item"><img src="imagens/capitulo-4/imagem1.jpg" alt="img1"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-4/imagem2.jpg" alt="img2"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-4/imagem3.jpg" alt="img3"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-4/imagem4.jpg" alt="img4"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-4/imagem5.jpg" alt="img5"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-4/imagem6.jpg" alt="img6"></div>
+        </div>
+    </div>
+
+    <!-- Capítulo 5 -->
+    <div class="capitulo" id="cap5">
+        <h2>💕 Capítulo 5</h2>
+        <div class="texto">"Eu sendo fofinho para mamãe"</div>
+        <div class="galeria">
+            <div class="galeria-item"><img src="imagens/capitulo-5/imagem1.jpg" alt="img1"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-5/imagem2.jpg" alt="img2"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-5/imagem3.jpg" alt="img3"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-5/imagem4.jpg" alt="img4"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-5/imagem5.jpg" alt="img5"></div>
+        </div>
+    </div>
+
+    <!-- Capítulo 6 -->
+    <div class="capitulo" id="cap6">
+        <h2>😴 Capítulo 6</h2>
+        <div class="texto">"Minha vida de cão mimado"</div>
+        <div class="galeria">
+            <div class="galeria-item"><img src="imagens/capitulo-6/imagem1.jpg" alt="img1"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-6/imagem2.jpg" alt="img2"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-6/imagem3.jpg" alt="img3"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-6/imagem4.jpg" alt="img4"></div>
+        </div>
+    </div>
+
+    <!-- Capítulo 7 -->
+    <div class="capitulo" id="cap7">
+        <h2>💤 Capítulo 7</h2>
+        <div class="texto">"Momento soneca"</div>
+        <div class="galeria">
+            <div class="galeria-item"><img src="imagens/capitulo-7/imagem1.jpg" alt="img1"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-7/imagem2.jpg" alt="img2"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-7/imagem3.jpg" alt="img3"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-7/imagem4.jpg" alt="img4"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-7/imagem5.jpg" alt="img5"></div>
+        </div>
+    </div>
+
+    <!-- Capítulo 8 -->
+    <div class="capitulo" id="cap8">
+        <h2>🐶 Capítulo 8</h2>
+        <div class="texto">"Mamãe sonhava em ter um peludinho... agora aguenta!"</div>
+        <div class="galeria">
+            <div class="galeria-item"><img src="imagens/capitulo-8/imagem1.jpg" alt="img1"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-8/imagem2.jpg" alt="img2"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-8/imagem3.jpg" alt="img3"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-8/imagem4.jpg" alt="img4"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-8/imagem5.jpg" alt="img5"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-8/imagem6.jpg" alt="img6"></div>
+        </div>
+        <h3>🐕 Parte 2: Pleno e peludinho</h3>
+        <div class="texto">"Pleno e peludinho"</div>
+        <div class="galeria">
+            <div class="galeria-item"><img src="imagens/capitulo-8/parte2/imagem1.jpg" alt="img1"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-8/parte2/imagem2.jpg" alt="img2"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-8/parte2/imagem3.jpg" alt="img3"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-8/parte2/imagem4.jpg" alt="img4"></div>
+            <div class="galeria-item"><img src="imagens/capitulo-8/parte2/imagem5.jpg" alt="img5"></div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>🐕 Fred, o Peludinho | Um ebook feito com muito carinho</p>
+    <p>© 2025 - Todos os direitos reservados</p>
+</footer>
+
+<div class="music-player">
+    <button id="playPauseBtn">⏸️</button>
+    <audio id="bgMusic" loop autoplay>
+        <source src="musica-fred.mp3" type="audio/mpeg">
+    </audio>
+</div>
+
+<script>
+    // ========== CARROSSEL ==========
+    const slides = document.getElementById('carrosselSlides');
+    const slideItems = document.querySelectorAll('.carrossel-slide');
+    const btnAnterior = document.getElementById('btnAnterior');
+    const btnProximo = document.getElementById('btnProximo');
+    const indicadoresDiv = document.getElementById('indicadores');
+    
+    let currentIndex = 0;
+    const totalSlides = slideItems.length;
+    
+    // Criar indicadores
+    for (let i = 0; i < totalSlides; i++) {
+        const indicador = document.createElement('div');
+        indicador.classList.add('indicador');
+        if (i === 0) indicador.classList.add('ativo');
+        indicador.addEventListener('click', () => irParaSlide(i));
+        indicadoresDiv.appendChild(indicador);
+    }
+    
+    const indicadores = document.querySelectorAll('.indicador');
+    
+    function atualizarCarrossel() {
+        slides.style.transform = `translateX(-${currentIndex * 100}%)`;
+        indicadores.forEach((ind, i) => {
+            if (i === currentIndex) ind.classList.add('ativo');
+            else ind.classList.remove('ativo');
+        });
+    }
+    
+    function proximoSlide() {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        atualizarCarrossel();
+    }
+    
+    function anteriorSlide() {
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        atualizarCarrossel();
+    }
+    
+    function irParaSlide(index) {
+        currentIndex = index;
+        atualizarCarrossel();
+    }
+    
+    btnProximo.addEventListener('click', proximoSlide);
+    btnAnterior.addEventListener('click', anteriorSlide);
+    
+    setInterval(proximoSlide, 5000);
+    
+    // ========== MÚSICA ==========
+    const audio = document.getElementById('bgMusic');
+    const playBtn = document.getElementById('playPauseBtn');
+    
+    audio.play().catch(e => console.log("Clique no botão para ouvir a música"));
+    
+    playBtn.addEventListener('click', () => {
+        if (audio.paused) {
+            audio.play();
+            playBtn.textContent = '⏸️';
+        } else {
+            audio.pause();
+            playBtn.textContent = '▶️';
+        }
+    });
+    
+    audio.addEventListener('ended', () => {
+        playBtn.textContent = '▶️';
+    });
+</script>
+
+</body>
+</html>
